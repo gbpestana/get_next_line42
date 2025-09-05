@@ -6,7 +6,7 @@
 /*   By: grodrig2 <grodrig2@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/20 15:52:05 by grodrig2          #+#    #+#             */
-/*   Updated: 2025/08/20 16:01:42 by grodrig2         ###   ########.fr       */
+/*   Updated: 2025/09/05 15:30:08 by grodrig2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,4 +55,17 @@ char	*get_next_line(int fd)
 	free(remainder);
 	remainder = NULL;
 	return (NULL);
+}
+
+char	*get_next_line(int fd)
+{
+	char	*line;
+	char	*source;
+
+	if (fd < 0 || BUFFER_SIZE <= 0)
+		return (NULL);
+	source = ft_read_and_store(fd, source);
+	line = ft_print_line(source, line);
+	source = ft_remove_line(source);
+	return (line);
 }
