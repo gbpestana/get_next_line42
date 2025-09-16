@@ -12,60 +12,99 @@
 
 #include "get_next_line.h"
 
-char	*get_next_line(int fd)
+char	*ft_update_stock(char *stock)
 {
-	static char	*remainder;
-	char		buffer[BUFFER_SIZE + 1];
-	char		*newline_pos;
-	char		*line;
-	int			bytes_read;
+	int		i;
+	int		j;
+	char	*new_stock;
 
-	if (fd < 0 || BUFFER_SIZE <= 0)
-		return (NULL);
-	newline_pos = NULL;
-	while (!newline_pos)
+	i = ft_strlen(stock);
+	if (!stock[i])
 	{
-		if (remainder)
-			newline_pos = ft_strchr(remainder, '\n');
-		if (newline_pos)
-			break ;
+		free(stock);
+		return (NULL);
+	}
+	new_stock = malloc(sizeof(char) * i + 1);
+	if (!new_stock)
+	{
+		free(new_stock);
+		return (NULL);
+	}
+	i++;
+	j = 0;
+	while (stock[i])
+		new_stock[j++] = stock[i++];
+	new_stock[j] = '\0';
+	free(stock);
+	return (new_stock);
+}
+
+char	*ft_extract_line(char *stock)
+{
+	int		i;
+	char	*line;
+
+	if (!stock || !*stock)
+		return (NULL);
+	i = ft_strlen(stock);
+	line = malloc(i + (stock[i] == '\n') + 1);
+	if (!line)
+		return (NULL);
+	i = 0;
+	while (stock[i] && stock [i] != '\n')
+	{
+		line[i] = stock[i];
+		i++;
+	}
+	if (stock[i] == '\n')
+		line [i++] = '\n';
+	line[i] = '\0';
+	return (line);
+}
+
+char	*ft_read_and_stock(int fd, char *stock)
+{
+	char	*buffer;
+	char	*temp;
+	int		bytes_read;
+
+	buffer = malloc(sizeof(char) * (BUFFER_SIZE + 1));
+	if (!buffer)
+		return (free(stock), NULL);
+	bytes_read = 1;
+	while (!ft_strchr(stock, '\n') && bytes_read > 0)
+	{
 		bytes_read = read(fd, buffer, BUFFER_SIZE);
-		if (bytes_read <= 0)
+		if (bytes_read < 0)
+			return (free(stock), free(buffer), NULL);
+		if (bytes_read == 0)
 			break ;
 		buffer[bytes_read] = '\0';
-		remainder = ft_strjoin(remainder, buffer);
-		if (!remainder)
-			return (NULL);
+		temp = ft_strjoin(stock, buffer);
+		free(stock);
+		stock = temp;
 	}
-	if (newline_pos)
-	{
-		line = ft_substr(remainder, 0, newline_pos - remainder + 1);
-		newline_pos = ft_strdup(newline_pos + 1);
-		free(remainder);
-		remainder = newline_pos;
-		return (line);
-	}
-	if (remainder && *remainder)
-	{
-		line = ft_strdup(remainder);
-		free(remainder);
-		remainder = NULL;
-		return (line);
-	}
-	free(remainder);
-	remainder = NULL;
-	return (NULL);
+	free(buffer);
+	if (bytes_read < 0 || (bytes_read == 0 && !stock))
+		return (NULL);
+	return (stock);
 }
 
 char	*get_next_line(int fd)
 {
-	char	*line;
-	char	*source;
+	static char	*stock;
+	char		*line;
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	source = ft_read_and_store(fd, source);
-	line = ft_print_line(source, line);
-	source = ft_remove_line(source);
+	stock = ft_read_and_stock(fd, stock);
+	if (!stock || stock[0] == '\0')
+	{
+		free(stock);
+		stock = NULL;
+		return (NULL);
+	}
+	line = ft_extract_line(stock);
+	stock = ft_update_stock(stock);
 	return (line);
 }
