@@ -6,7 +6,7 @@
 /*   By: grodrig2 <grodrig2@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/18 14:52:21 by grodrig2          #+#    #+#             */
-/*   Updated: 2025/09/18 16:40:33 by grodrig2         ###   ########.fr       */
+/*   Updated: 2025/09/18 18:15:07 by grodrig2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,13 +63,13 @@ char	*ft_read_and_save(int fd, char *storage)
 
 char	*get_next_line( int fd)
 {
-	char	*storage;
-	char	*line;
+	static char	*storage;
+	char		*line;
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
 	storage = ft_read_and_save(fd, storage);
-	if (!storage || storage[0] = '\0')
+	if (!storage || storage[0] == '\0')
 		return (free(storage), NULL);
 	line = ft_read_line(storage);
 	storage = ft_remove_line(storage);
