@@ -13,23 +13,29 @@
 #include "get_next_line.h"
 
 
-size_t	ft_strlen(const char *s)
+size_t	ft_strlen_2(const char *s, int n)
 {
 	size_t	i;
 
 	i = 0;
 	if (!s)
 		return (0);
-	while (s[i] && s[i] != '\n')
-		i++;
+	if (n == 1)
+	{
+		while (s[i] && s[i] != '\n')
+			i++;
+	}
+	else
+	{
+		while (s[i])
+			i++;
+	}
 	return (i);
 }
 
 char	*ft_strjoin(char *s1, char *s2)
 {
 	char	*joined;
-	size_t	i;
-	size_t	j;
 	size_t	len1;
 	size_t	len2;
 
@@ -39,57 +45,20 @@ char	*ft_strjoin(char *s1, char *s2)
 		return (ft_strdup(s2));
 	if (!s2)
 		return (s1);
-	len1 = ft_strlen(s1);
-	len2 = ft_strlen(s2);
-	joined = (char *)malloc(len1 + len2 + 1);
+	len1 = 0;
+	len2 = 0;
+	joined = (char *)malloc(ft_strlen_2(s1, 0) + ft_strlen_2(s2, 0) + 1);
 	if (!joined)
-	{
-		free(s1);
 		return (NULL);
-	}
-	i = 0;
-	while (i < len1)
+	while (s1[len1])
 	{
-		joined[i] = s1[i];
-		i++;
+		joined[len1] = s1[len1];
+		len1++;
 	}
-	j = 0;
-	while (j < len2)
-	{
-		joined[i + j] = s2[j];
-		j++;
-	}
-	joined[i + j] = '\0';
-	free(s1);
-	return (joined);
-}
-
-char	*ft_substr(char *s, unsigned int start, size_t len)
-{
-	char			*sub;
-	size_t			s_len;
-	size_t			i;
-	size_t			max_len;
-
-	if (!s)
-		return (NULL);
-	s_len = ft_strlen(s);
-	if (start >= s_len)
-		return (ft_strdup(""));
-	max_len = s_len - start;
-	if (len > max_len)
-		len = max_len;
-	sub = (char *)malloc(len + 1);
-	if (!sub)
-		return (NULL);
-	i = 0;
-	while (i < len)
-	{
-		sub[i] = s[start + i];
-		i++;
-	}
-	sub[i] = '\0';
-	return (sub);
+	while (s2[len2])
+		joined[len1 + len2] = s2[len2++];
+	joined[len1 + len2] = '\0';
+	return (free(s1), joined);
 }
 
 char	*ft_strchr(const char *s, int c)
@@ -108,4 +77,25 @@ char	*ft_strchr(const char *s, int c)
 	if (c == '\0')
 		return ((char *)&s[i]);
 	return (NULL);
+}
+
+char	*ft_strdup(const char *source)
+{
+	int		len;
+	char	*duplicate;
+
+	if (!source)
+		return(NULL);
+	len = ft_strlen_2(source, 0);
+	duplicate = malloc((sizeof(char) * len) + 1);
+	if (!duplicate)
+		return(NULL);
+	len = 0;
+	while (source[len])
+	{
+		duplicate[len] = source[len];
+		len++;
+	}
+	duplicate[len] = '\0';
+	return(duplicate);
 }
