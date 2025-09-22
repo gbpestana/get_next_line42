@@ -12,7 +12,6 @@
 
 #include "get_next_line.h"
 
-
 size_t	ft_strlen_2(const char *s, int n)
 {
 	size_t	i;
@@ -36,8 +35,8 @@ size_t	ft_strlen_2(const char *s, int n)
 char	*ft_strjoin(char *s1, char *s2)
 {
 	char	*joined;
-	size_t	len1;
-	size_t	len2;
+	size_t	i;
+	size_t	j;
 
 	if (!s1 && !s2)
 		return (NULL);
@@ -45,19 +44,19 @@ char	*ft_strjoin(char *s1, char *s2)
 		return (ft_strdup(s2));
 	if (!s2)
 		return (s1);
-	len1 = 0;
-	len2 = 0;
-	joined = (char *)malloc(ft_strlen_2(s1, 0) + ft_strlen_2(s2, 0) + 1);
+	i = 0;
+	j = 0;
+	joined = malloc(ft_strlen_2(s1, 0) + ft_strlen_2(s2, 0) + 1);
 	if (!joined)
 		return (NULL);
-	while (s1[len1])
+	while (s1[i])
 	{
-		joined[len1] = s1[len1];
-		len1++;
+		joined[i] = s1[i];
+		i++;
 	}
-	while (s2[len2])
-		joined[len1 + len2] = s2[len2++];
-	joined[len1 + len2] = '\0';
+	while (s2[j])
+		joined[i++] = s2[j++];
+	joined[i] = '\0';
 	return (free(s1), joined);
 }
 
@@ -85,11 +84,11 @@ char	*ft_strdup(const char *source)
 	char	*duplicate;
 
 	if (!source)
-		return(NULL);
+		return (NULL);
 	len = ft_strlen_2(source, 0);
 	duplicate = malloc((sizeof(char) * len) + 1);
 	if (!duplicate)
-		return(NULL);
+		return (NULL);
 	len = 0;
 	while (source[len])
 	{
@@ -97,5 +96,5 @@ char	*ft_strdup(const char *source)
 		len++;
 	}
 	duplicate[len] = '\0';
-	return(duplicate);
+	return (duplicate);
 }

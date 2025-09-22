@@ -12,24 +12,27 @@
 
 #include "get_next_line.h"
 
+#include "get_next_line.h"
+
 char	*ft_remove_line(char *source)
 {
-	int		i;
-	int		len;
 	char	*new_source;
+	char	*line;
+	size_t	len;
 
-	i = ft_strlen_2(source, 1);
-	len = ft_strlen_2(source, 0);
-	new_source = malloc((sizeof(char) * (len - i)) + 1);
+	line = ft_strchr(source, '\n');
+	if (!line)
+		return (free(source), NULL);
+	len = ft_strlen_2(line, 0);
+	new_source = malloc(sizeof(char) * len);
 	if (!new_source)
-		return(NULL);
-	i++;
-	len = 0;
-	while (source[i])
+		return (free(source), NULL);
+	new_source[len - 1] = '\0';
+	len = 1;
+	while (line[len])
 	{
-		new_source[len] = source[i];
+		new_source[len - 1] = line[len];
 		len++;
-		i++;
 	}
 	free(source);
 	return (new_source);
@@ -41,7 +44,7 @@ char	*ft_read_line(char *source)
 	char	*line;
 
 	len = ft_strlen_2(source, 1);
-	line = malloc(len + (source[len] == '\n') + 1 );
+	line = malloc(len + (source[len] == '\n') + 1);
 	if (!line)
 		return (NULL);
 	len = 0;
@@ -72,7 +75,7 @@ char	*ft_read_and_save(int fd, char *storage)
 		if (bytes < 0)
 			return (free(storage), free(buffer), NULL);
 		if (bytes == 0)
-			break;
+			break ;
 		buffer[bytes] = '\0';
 		temp = ft_strjoin(storage, buffer);
 		free(storage);
@@ -84,7 +87,7 @@ char	*ft_read_and_save(int fd, char *storage)
 	return (storage);
 }
 
-char	*get_next_line( int fd)
+char	*get_next_line(int fd)
 {
 	static char	*storage;
 	char		*line;
