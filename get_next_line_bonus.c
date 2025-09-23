@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: grodrig2 <grodrig2@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/09/18 14:52:21 by grodrig2          #+#    #+#             */
-/*   Updated: 2025/09/23 13:06:13 by grodrig2         ###   ########.fr       */
+/*   Created: 2025/09/23 11:06:56 by grodrig2          #+#    #+#             */
+/*   Updated: 2025/09/23 11:31:05 by grodrig2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 char	*ft_remove_line(char *source)
 {
@@ -20,11 +20,11 @@ char	*ft_remove_line(char *source)
 
 	line = ft_strchr(source, '\n');
 	if (!line)
-		return (NULL);
+		return (free(source), NULL);
 	len = ft_strlen_2(line, 0);
 	new_source = malloc(sizeof(char) * len);
 	if (!new_source)
-		return (NULL);
+		return (free(source), NULL);
 	new_source[len - 1] = '\0';
 	len = 1;
 	while (line[len])
@@ -36,42 +36,11 @@ char	*ft_remove_line(char *source)
 	return (new_source);
 }
 
-// char	*ft_remove_line(char *stock)
-// {
-// 	int		i;
-// 	int		j;
-// 	char	*new_stock;
-
-// 	i = 0;
-// 	while (stock[i] && stock [i] != '\n')
-// 		i++;
-// 	if (!stock[i])
-// 	{
-// 		free(stock);
-// 		return (NULL);
-// 	}
-// 	new_stock = malloc(sizeof(char) * ft_strlen_2(stock, 0) - i);
-// 	if (!new_stock)
-// 	{
-// 		free(new_stock);
-// 		return (NULL);
-// 	}
-// 	i++;
-// 	j = 0;
-// 	while (stock[i])
-// 		new_stock[j++] = stock[i++];
-// 	new_stock[j] = '\0';
-// 	free(stock);
-// 	return (new_stock);
-// }
-
 char	*ft_read_line(char *source)
 {
 	int		len;
 	char	*line;
 
-	if (!source || !*source)
-		return (NULL);
 	len = ft_strlen_2(source, 1);
 	line = malloc(len + (source[len] == '\n') + 1);
 	if (!line)
@@ -96,7 +65,7 @@ char	*ft_read_and_save(int fd, char *storage)
 
 	buffer = malloc(sizeof(char) * BUFFER_SIZE + 1);
 	if (!buffer)
-		return (free(storage), NULL);
+		return (NULL);
 	bytes = 1;
 	while (bytes > 0 && !ft_strchr(storage, '\n'))
 	{
@@ -118,22 +87,15 @@ char	*ft_read_and_save(int fd, char *storage)
 
 char	*get_next_line(int fd)
 {
-	static char	*storage;
+	static char	*storage[1024];
 	char		*line;
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	storage = ft_read_and_save(fd, storage);
-	if (!storage || storage[0] == '\0')
-	{
-		free(storage);
-		storage = NULL;
-		return (NULL);
-	}
-	line = ft_read_line(storage);
-	if (ft_strchr(line, '\n'))
-		storage = ft_remove_line(storage);
-	else
-		free(storage);
+	storage[fd] = ft_read_and_save(fd, storage[fd]);
+	if (!storage[fd] || storage[fd][0] == '\0')
+		return (free(storage[fd]), NULL);
+	line = ft_read_line(storage[fd]);
+	storage[fd] = ft_remove_line(storage[fd]);
 	return (line);
 }
