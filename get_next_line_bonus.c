@@ -12,7 +12,7 @@
 
 #include "get_next_line_bonus.h"
 
-char	*ft_remove_line(char *source)
+static char	*ft_remove_line(char *source)
 {
 	char	*new_source;
 	char	*line;
@@ -21,11 +21,11 @@ char	*ft_remove_line(char *source)
 	line = ft_strchr(source, '\n');
 	if (!line)
 		return (free(source), NULL);
-	len = ft_strlen_2(line, 0);
-	new_source = malloc(sizeof(char) * len);
+	len = ft_strlen_2(line + 1, 0);
+	new_source = malloc(sizeof(char) * len + 1);
 	if (!new_source)
 		return (free(source), NULL);
-	new_source[len - 1] = '\0';
+	new_source[len] = '\0';
 	len = 1;
 	while (line[len])
 	{
@@ -36,11 +36,13 @@ char	*ft_remove_line(char *source)
 	return (new_source);
 }
 
-char	*ft_read_line(char *source)
+static char	*ft_read_line(char *source)
 {
 	int		len;
 	char	*line;
 
+	if (!source || !*source)
+		return (NULL);
 	len = ft_strlen_2(source, 1);
 	line = malloc(len + (source[len] == '\n') + 1);
 	if (!line)
@@ -57,31 +59,30 @@ char	*ft_read_line(char *source)
 	return (line);
 }
 
-char	*ft_read_and_save(int fd, char *storage)
+static char	*ft_read_and_save(int fd, char *storage)
 {
 	int		bytes;
 	char	*buffer;
 	char	*temp;
 
-	buffer = malloc(sizeof(char) * BUFFER_SIZE + 1);
+	buffer = malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	if (!buffer)
-		return (NULL);
+		return (free(storage), NULL);
 	bytes = 1;
 	while (bytes > 0 && !ft_strchr(storage, '\n'))
 	{
 		bytes = read(fd, buffer, BUFFER_SIZE);
 		if (bytes < 0)
-			return (free(buffer), NULL);
+			return (free(buffer), free(storage), NULL);
 		if (bytes == 0)
 			break ;
 		buffer[bytes] = '\0';
 		temp = ft_strjoin(storage, buffer);
-		free(storage);
+		if (!temp)
+			return (free(buffer), free(storage), NULL);
 		storage = temp;
 	}
 	free(buffer);
-	if (bytes < 0 || (!storage && bytes == 0))
-		return (NULL);
 	return (storage);
 }
 
@@ -94,8 +95,20 @@ char	*get_next_line(int fd)
 		return (NULL);
 	storage[fd] = ft_read_and_save(fd, storage[fd]);
 	if (!storage[fd] || storage[fd][0] == '\0')
-		return (free(storage[fd]), NULL);
+	{
+		free(storage[fd]);
+		storage[fd] = NULL;
+		return (NULL);
+	}
 	line = ft_read_line(storage[fd]);
-	storage[fd] = ft_remove_line(storage[fd]);
+	if (!line)
+		return (free(storage[fd]), storage[fd] = NULL, NULL);
+	if (ft_strchr(storage[fd], '\n'))
+		storage[fd] = ft_remove_line(storage[fd]);
+	else
+	{
+		free(storage[fd]);
+		storage[fd] = NULL;
+	}
 	return (line);
 }

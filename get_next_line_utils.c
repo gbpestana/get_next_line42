@@ -43,7 +43,7 @@ char	*ft_strjoin(char *s1, char *s2)
 	if (!s1)
 		return (ft_strdup(s2));
 	if (!s2)
-		return (s1);
+		return (ft_strdup(s1));
 	i = 0;
 	j = 0;
 	joined = malloc(ft_strlen_2(s1, 0) + ft_strlen_2(s2, 0) + 1);
